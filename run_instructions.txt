@@ -1,0 +1,27 @@
+QUICK START INSTRUCTIONS:
+
+1. Install Python dependencies:
+   pip install -r requirements.txt
+
+2. Run the Flask application:
+   python app.py
+
+3. Open your browser and go to:
+   http://localhost:5000
+
+4. Start translating!
+
+FEATURES TO DEMO:
+- Enter text and select languages
+- Use auto-detect for source language
+- Click translate or press Ctrl+Enter
+- Listen to translations with speaker button
+- Copy translations with copy button
+- Swap languages with the swap button
+- Try on mobile - it's fully responsive!
+
+KEYBOARD SHORTCUTS:
+- Ctrl+Enter: Translate
+- Ctrl+K: Focus input
+- Ctrl+L: Clear all
+- Ctrl+C: Copy (when output focused)
