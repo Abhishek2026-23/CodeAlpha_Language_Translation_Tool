@@ -17,11 +17,49 @@ A modern, web-based language translation tool built for the **CodeAlpha AI Inter
 ## 🛠️ Tech Stack
 
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Backend**: Python Flask
-- **Translation API**: Google Translate API (via googletrans library)
-- **Text-to-Speech**: Google Text-to-Speech (gTTS)
-- **Styling**: Custom CSS with responsive design
+- **Backend**: Python Flask (Serverless on Vercel)
+- **Translation API**: Google Translate API (via deep-translator library)
+- **Text-to-Speech**: Browser Web Speech API
+- **Styling**: Custom CSS with Glassmorphism design
 - **Icons**: Font Awesome
+- **Deployment**: Vercel (Serverless Functions)
+- **Version Control**: Git & GitHub
+
+## 🔧 Backend API Integration
+
+### Google Translate API Implementation
+
+This project uses the **Google Translate API** through the `deep-translator` Python library for accurate translations:
+
+```python
+from deep_translator import GoogleTranslator
+
+# Translation with auto-detection
+translator = GoogleTranslator(source='auto', target='es')
+result = translator.translate("Hello World")
+# Returns: "Hola Mundo"
+```
+
+### API Endpoints
+
+**POST /translate**
+- Handles translation requests
+- Supports 15+ languages
+- Auto-detection capability
+- Error handling for invalid inputs
+
+**POST /text-to-speech**
+- Generates audio for translated text
+- Uses browser's Web Speech API for optimal performance
+- Fallback to server-side generation if needed
+
+### Backend Architecture
+
+- **Flask Application**: Lightweight Python web framework
+- **Serverless Deployment**: Optimized for Vercel's serverless functions
+- **Error Handling**: Comprehensive error management
+- **CORS Support**: Cross-origin resource sharing enabled
+- **JSON API**: RESTful API design with JSON responses
 
 ## 🌍 Supported Languages
 
@@ -115,6 +153,41 @@ The application uses the following default settings:
 - **Debug Mode**: Enabled (disable for production)
 - **Character Limit**: 5000 characters per translation
 
+## 🧪 API Testing & Verification
+
+### Translation API Testing
+You can verify the Google Translate API integration by:
+
+1. **Basic Translation Test**:
+   - Input: "Hello, how are you?"
+   - Source: English (auto-detect)
+   - Target: Spanish
+   - Expected Output: "Hola, ¿cómo estás?"
+
+2. **Auto-Detection Test**:
+   - Input: "Bonjour le monde"
+   - Source: Auto Detect
+   - Target: English
+   - Expected Output: "Hello world" (French detected)
+
+3. **Multiple Language Test**:
+   - Test translations between: EN↔ES, EN↔FR, EN↔DE, EN↔HI
+   - Verify accuracy and speed of translations
+
+### API Response Format
+```json
+{
+  "translated_text": "Hola Mundo",
+  "detected_language": "English",
+  "confidence": null
+}
+```
+
+### Backend API Endpoints
+- **POST /translate**: Main translation endpoint
+- **POST /text-to-speech**: Audio generation endpoint
+- **GET /**: Main application interface
+
 ## 🎯 LinkedIn Demo Video Points
 
 When creating your demo video, highlight these key features:
@@ -127,6 +200,8 @@ When creating your demo video, highlight these key features:
 6. **Error Handling**: Demonstrate how errors are handled gracefully
 7. **User Experience**: Highlight smooth animations and intuitive controls
 8. **Real-world Usage**: Translate practical sentences/phrases
+9. **API Integration**: Show real-time API calls and responses
+10. **Copy Functionality**: Demonstrate the copy-to-clipboard feature
 
 ## 🚀 Deployment Options
 
@@ -213,9 +288,22 @@ If you encounter any issues or have questions:
 
 ## 📸 Screenshots
 
-*Add screenshots of your application here when creating your demo*
+### Main Interface
+![CodeAlpha Language Translation Tool - Main Interface](https://your-vercel-url.vercel.app)
 
-- Main interface
-- Translation in progress
-- Mobile responsive view
-- Error handling examples
+### Translation in Action
+![Translation Example](https://your-vercel-url.vercel.app)
+*Example: Translating "Hello World" from English to Spanish*
+
+### Mobile Responsive Design
+![Mobile View](https://your-vercel-url.vercel.app)
+*Fully responsive design works on all devices*
+
+### Features Demonstration
+- **Auto Language Detection**: Automatically detects source language
+- **Real-time Translation**: Instant translation using Google Translate API
+- **Text-to-Speech**: Click speaker icon to hear pronunciation
+- **Copy Functionality**: One-click copy to clipboard
+- **Language Swapping**: Easy language switching with swap button
+
+**Live Demo**: [https://code-alpha-language-translation-tool.vercel.app](https://code-alpha-language-translation-tool.vercel.app)
