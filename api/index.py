@@ -97,9 +97,5 @@ def text_to_speech():
     except Exception as e:
         return jsonify({'error': f'Text-to-speech failed: {str(e)}'}), 500
 
-# For Vercel
-def handler(request):
-    return app(request.environ, lambda status, headers: None)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+# Vercel serverless function handler
+app = app
