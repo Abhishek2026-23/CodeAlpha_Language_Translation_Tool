@@ -1,0 +1,18 @@
+# Local development files
+app.py
+run_instructions.txt
+deploy.bat
+DEPLOY_NOW.md
+DEPLOYMENT.md
+VERCEL_READY.md
+requirements-vercel.txt
+
+# Documentation
+API_TESTING.md
+
+# IDE files
+.vscode/
+.kiro/
+
+# Git
+.git/
