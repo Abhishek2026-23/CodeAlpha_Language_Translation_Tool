@@ -33,14 +33,29 @@ def index():
     """Render the main page"""
     return render_template('index.html', languages=LANGUAGES)
 
+@app.route('/test')
+def test_api():
+    """Test endpoint to verify API is working"""
+    return jsonify({
+        'status': 'API is working',
+        'message': 'Translation service is online',
+        'supported_languages': len(LANGUAGES)
+    })
+
 @app.route('/translate', methods=['POST'])
 def translate_text():
     """Handle translation requests"""
     try:
+        # Get request data
         data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data received'}), 400
+            
         text = data.get('text', '').strip()
         source_lang = data.get('source_lang', 'auto')
         target_lang = data.get('target_lang', 'en')
+        
+        print(f"Translation request: '{text}' from {source_lang} to {target_lang}")
         
         # Validate input
         if not text:
@@ -50,29 +65,41 @@ def translate_text():
             return jsonify({'error': 'Source and target languages cannot be the same'}), 400
         
         # Perform translation
-        if source_lang == 'auto':
-            # Use auto-detect
-            translator = GoogleTranslator(source='auto', target=target_lang)
-            result = translator.translate(text)
-            try:
-                detected_lang = GoogleTranslator(source='auto', target='en').detect(text)
-                detected_lang_name = LANGUAGES.get(detected_lang, 'Auto-detected')
-            except:
-                detected_lang_name = 'Auto-detected'
-        else:
-            # Use specified source language
-            translator = GoogleTranslator(source=source_lang, target=target_lang)
-            result = translator.translate(text)
-            detected_lang_name = LANGUAGES.get(source_lang, 'Unknown')
-        
-        return jsonify({
-            'translated_text': result,
-            'detected_language': detected_lang_name,
-            'confidence': None
-        })
+        try:
+            if source_lang == 'auto':
+                # Use auto-detect
+                translator = GoogleTranslator(source='auto', target=target_lang)
+                result = translator.translate(text)
+                try:
+                    detected_lang = GoogleTranslator(source='auto', target='en').detect(text)
+                    detected_lang_name = LANGUAGES.get(detected_lang, 'Auto-detected')
+                except Exception as detect_error:
+                    print(f"Language detection error: {detect_error}")
+                    detected_lang_name = 'Auto-detected'
+            else:
+                # Use specified source language
+                translator = GoogleTranslator(source=source_lang, target=target_lang)
+                result = translator.translate(text)
+                detected_lang_name = LANGUAGES.get(source_lang, 'Unknown')
+            
+            print(f"Translation successful: '{result}'")
+            
+            if not result:
+                return jsonify({'error': 'Translation returned empty result'}), 500
+            
+            return jsonify({
+                'translated_text': result,
+                'detected_language': detected_lang_name,
+                'confidence': None
+            })
+            
+        except Exception as translation_error:
+            print(f"Translation API error: {translation_error}")
+            return jsonify({'error': f'Translation service error: {str(translation_error)}'}), 500
         
     except Exception as e:
-        return jsonify({'error': f'Translation failed: {str(e)}'}), 500
+        print(f"General error in translate_text: {e}")
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/text-to-speech', methods=['POST'])
 def text_to_speech():

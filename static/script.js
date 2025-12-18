@@ -97,6 +97,8 @@ async function translateText() {
     hideDetectedLanguage();
 
     try {
+        console.log('Making translation request...', {text, source, target});
+        
         const response = await fetch('/translate', {
             method: 'POST',
             headers: {
@@ -109,15 +111,24 @@ async function translateText() {
             })
         });
 
+        console.log('Response status:', response.status);
+        
         const data = await response.json();
+        console.log('Response data:', data);
 
         if (!response.ok) {
-            throw new Error(data.error || 'Translation failed');
+            throw new Error(data.error || `HTTP ${response.status}: Translation failed`);
+        }
+
+        if (!data.translated_text) {
+            throw new Error('No translation received from server');
         }
 
         // Display translation
         outputText.value = data.translated_text;
         outputText.classList.add('slide-in');
+        
+        console.log('Translation successful:', data.translated_text);
 
         // Show detected language if auto-detect was used
         if (source === 'auto' && data.detected_language) {
