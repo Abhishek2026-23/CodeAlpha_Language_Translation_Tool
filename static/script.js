@@ -124,11 +124,19 @@ async function translateText() {
             throw new Error('No translation received from server');
         }
 
-        // Display translation
+        // Display translation with success indicator
         outputText.value = data.translated_text;
         outputText.classList.add('slide-in');
+        outputText.style.backgroundColor = '#f0fff4'; // Light green background
         
         console.log('Translation successful:', data.translated_text);
+        
+        // Show success message briefly
+        const successMsg = document.createElement('div');
+        successMsg.textContent = '✅ Translation completed!';
+        successMsg.style.cssText = 'position:fixed;top:20px;right:20px;background:#4ade80;color:white;padding:10px 20px;border-radius:8px;z-index:1000;font-weight:600;';
+        document.body.appendChild(successMsg);
+        setTimeout(() => successMsg.remove(), 3000);
 
         // Show detected language if auto-detect was used
         if (source === 'auto' && data.detected_language) {
