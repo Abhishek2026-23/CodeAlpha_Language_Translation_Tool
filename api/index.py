@@ -97,5 +97,5 @@ def text_to_speech():
     except Exception as e:
         return jsonify({'error': f'Text-to-speech failed: {str(e)}'}), 500
 
-# Vercel serverless function handler
-app = app
+# This is required for Vercel to recognize the Flask app
+# The variable name 'app' is what Vercel looks for
