@@ -267,6 +267,13 @@ This project was built for the CodeAlpha AI Internship. If you'd like to contrib
 
 This project is created for educational purposes as part of the CodeAlpha AI Internship program.
 
+## 🙏 Acknowledgments
+
+- **Google Translate API**: This project uses Google's translation services through the `deep-translator` library
+- **Google Cloud Translation**: Powered by Google Cloud Translation API for accurate multilingual translations
+- **Attribution**: Translation services provided by Google Translate API
+- **CodeAlpha**: Built for CodeAlpha AI Internship Program
+
 ## 👨‍💻 Developer
 
 **Built for CodeAlpha AI Internship**
