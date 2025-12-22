@@ -807,237 +807,180 @@ def translate_with_google_api(text, source_lang, target_lang, api_key):
         return None
 
 def translate_with_local_dictionary(text, source_lang, target_lang):
-    """Enhanced local dictionary fallback with smart sentence translation"""
+    """Enhanced local dictionary with complete phrase translation priority"""
     
-    # Comprehensive translation dictionary
+    # Comprehensive translation dictionary with complete phrases first
     translations = {
-        # English to Spanish
-        ('hello', 'es'): 'hola',
-        ('world', 'es'): 'mundo',
-        ('hello world', 'es'): 'hola mundo',
-        ('good morning', 'es'): 'buenos días',
-        ('good afternoon', 'es'): 'buenas tardes',
-        ('good evening', 'es'): 'buenas noches',
-        ('good night', 'es'): 'buenas noches',
-        ('thank you', 'es'): 'gracias',
-        ('please', 'es'): 'por favor',
-        ('excuse me', 'es'): 'disculpe',
-        ('sorry', 'es'): 'lo siento',
-        ('yes', 'es'): 'sí',
-        ('no', 'es'): 'no',
-        ('how are you', 'es'): 'cómo estás',
-        ('how', 'es'): 'cómo',
-        ('are', 'es'): 'estás',
-        ('you', 'es'): 'tú',
-        ('what is your name', 'es'): 'cómo te llamas',
-        ('my name is', 'es'): 'mi nombre es',
-        ('goodbye', 'es'): 'adiós',
-        ('see you later', 'es'): 'hasta luego',
-        ('i love you', 'es'): 'te amo',
-        ('how much', 'es'): 'cuánto cuesta',
-        ('where is', 'es'): 'dónde está',
-        ('i', 'es'): 'yo',
-        ('am', 'es'): 'soy',
-        ('fine', 'es'): 'bien',
-        ('good', 'es'): 'bueno',
-        ('bad', 'es'): 'malo',
-        ('very', 'es'): 'muy',
-        ('nice', 'es'): 'agradable',
-        ('beautiful', 'es'): 'hermoso',
-        ('today', 'es'): 'hoy',
-        ('tomorrow', 'es'): 'mañana',
-        ('yesterday', 'es'): 'ayer',
-        
-        # English to French
-        ('hello', 'fr'): 'bonjour',
-        ('world', 'fr'): 'monde',
-        ('hello world', 'fr'): 'bonjour le monde',
-        ('good morning', 'fr'): 'bonjour',
-        ('good afternoon', 'fr'): 'bon après-midi',
-        ('good evening', 'fr'): 'bonsoir',
-        ('good night', 'fr'): 'bonne nuit',
-        ('thank you', 'fr'): 'merci',
-        ('please', 'fr'): 's\'il vous plaît',
-        ('excuse me', 'fr'): 'excusez-moi',
-        ('sorry', 'fr'): 'désolé',
-        ('yes', 'fr'): 'oui',
-        ('no', 'fr'): 'non',
-        ('how are you', 'fr'): 'comment allez-vous',
-        ('how', 'fr'): 'comment',
-        ('are', 'fr'): 'êtes',
-        ('you', 'fr'): 'vous',
-        ('what is your name', 'fr'): 'comment vous appelez-vous',
-        ('my name is', 'fr'): 'je m\'appelle',
-        ('goodbye', 'fr'): 'au revoir',
-        ('see you later', 'fr'): 'à bientôt',
-        ('i love you', 'fr'): 'je t\'aime',
-        ('how much', 'fr'): 'combien',
-        ('where is', 'fr'): 'où est',
-        ('i', 'fr'): 'je',
-        ('am', 'fr'): 'suis',
-        ('fine', 'fr'): 'bien',
-        ('good', 'fr'): 'bon',
-        ('bad', 'fr'): 'mauvais',
-        ('very', 'fr'): 'très',
-        ('nice', 'fr'): 'agréable',
-        ('beautiful', 'fr'): 'beau',
-        ('today', 'fr'): 'aujourd\'hui',
-        ('tomorrow', 'fr'): 'demain',
-        ('yesterday', 'fr'): 'hier',
-        
-        # English to German
-        ('hello', 'de'): 'hallo',
-        ('world', 'de'): 'welt',
-        ('hello world', 'de'): 'hallo welt',
-        ('good morning', 'de'): 'guten morgen',
-        ('good afternoon', 'de'): 'guten tag',
-        ('good evening', 'de'): 'guten abend',
-        ('good night', 'de'): 'gute nacht',
-        ('thank you', 'de'): 'danke',
-        ('please', 'de'): 'bitte',
-        ('excuse me', 'de'): 'entschuldigung',
-        ('sorry', 'de'): 'es tut mir leid',
-        ('yes', 'de'): 'ja',
-        ('no', 'de'): 'nein',
-        ('how are you', 'de'): 'wie geht es dir',
-        ('how', 'de'): 'wie',
-        ('are', 'de'): 'sind',
-        ('you', 'de'): 'du',
-        ('what is your name', 'de'): 'wie heißt du',
-        ('my name is', 'de'): 'ich heiße',
-        ('goodbye', 'de'): 'auf wiedersehen',
-        ('see you later', 'de'): 'bis später',
-        ('i love you', 'de'): 'ich liebe dich',
-        ('how much', 'de'): 'wie viel',
-        ('where is', 'de'): 'wo ist',
-        ('i', 'de'): 'ich',
-        ('am', 'de'): 'bin',
-        ('fine', 'de'): 'gut',
-        ('good', 'de'): 'gut',
-        ('bad', 'de'): 'schlecht',
-        ('very', 'de'): 'sehr',
-        ('nice', 'de'): 'schön',
-        ('beautiful', 'de'): 'schön',
-        ('today', 'de'): 'heute',
-        ('tomorrow', 'de'): 'morgen',
-        ('yesterday', 'de'): 'gestern',
-        
-        # English to Hindi
-        ('hello', 'hi'): 'नमस्ते',
-        ('world', 'hi'): 'दुनिया',
+        # Complete phrases (highest priority)
+        ('hello world how are you', 'hi'): 'नमस्ते दुनिया आप कैसे हैं',
         ('hello world', 'hi'): 'नमस्ते दुनिया',
+        ('how are you', 'hi'): 'आप कैसे हैं',
         ('good morning', 'hi'): 'सुप्रभात',
         ('good afternoon', 'hi'): 'नमस्कार',
         ('good evening', 'hi'): 'शुभ संध्या',
         ('good night', 'hi'): 'शुभ रात्रि',
         ('thank you', 'hi'): 'धन्यवाद',
-        ('please', 'hi'): 'कृपया',
-        ('excuse me', 'hi'): 'माफ करें',
-        ('sorry', 'hi'): 'माफ करें',
-        ('yes', 'hi'): 'हाँ',
-        ('no', 'hi'): 'नहीं',
-        ('how are you', 'hi'): 'आप कैसे हैं',
-        ('how', 'hi'): 'कैसे',
-        ('are', 'hi'): 'हैं',
-        ('you', 'hi'): 'आप',
         ('what is your name', 'hi'): 'आपका नाम क्या है',
         ('my name is', 'hi'): 'मेरा नाम है',
-        ('goodbye', 'hi'): 'अलविदा',
         ('see you later', 'hi'): 'फिर मिलेंगे',
         ('i love you', 'hi'): 'मैं तुमसे प्यार करता हूँ',
-        ('how much', 'hi'): 'कितना',
         ('where is', 'hi'): 'कहाँ है',
-        ('i', 'hi'): 'मैं',
-        ('am', 'hi'): 'हूँ',
-        ('fine', 'hi'): 'ठीक',
-        ('good', 'hi'): 'अच्छा',
-        ('bad', 'hi'): 'बुरा',
-        ('very', 'hi'): 'बहुत',
-        ('nice', 'hi'): 'अच्छा',
-        ('beautiful', 'hi'): 'सुंदर',
-        ('today', 'hi'): 'आज',
-        ('tomorrow', 'hi'): 'कल',
-        ('yesterday', 'hi'): 'कल',
+        ('how much', 'hi'): 'कितना',
         
-        # English to Chinese
-        ('hello', 'zh'): '你好',
-        ('world', 'zh'): '世界',
+        # Spanish complete phrases
+        ('hello world how are you', 'es'): 'hola mundo cómo estás',
+        ('hello world', 'es'): 'hola mundo',
+        ('how are you', 'es'): 'cómo estás',
+        ('good morning', 'es'): 'buenos días',
+        ('good afternoon', 'es'): 'buenas tardes',
+        ('good evening', 'es'): 'buenas noches',
+        ('good night', 'es'): 'buenas noches',
+        ('thank you', 'es'): 'gracias',
+        ('what is your name', 'es'): 'cómo te llamas',
+        ('my name is', 'es'): 'mi nombre es',
+        ('see you later', 'es'): 'hasta luego',
+        ('i love you', 'es'): 'te amo',
+        ('where is', 'es'): 'dónde está',
+        ('how much', 'es'): 'cuánto cuesta',
+        
+        # French complete phrases
+        ('hello world how are you', 'fr'): 'bonjour le monde comment allez-vous',
+        ('hello world', 'fr'): 'bonjour le monde',
+        ('how are you', 'fr'): 'comment allez-vous',
+        ('good morning', 'fr'): 'bonjour',
+        ('good afternoon', 'fr'): 'bon après-midi',
+        ('good evening', 'fr'): 'bonsoir',
+        ('good night', 'fr'): 'bonne nuit',
+        ('thank you', 'fr'): 'merci',
+        ('what is your name', 'fr'): 'comment vous appelez-vous',
+        ('my name is', 'fr'): 'je m\'appelle',
+        ('see you later', 'fr'): 'à bientôt',
+        ('i love you', 'fr'): 'je t\'aime',
+        ('where is', 'fr'): 'où est',
+        ('how much', 'fr'): 'combien',
+        
+        # German complete phrases
+        ('hello world how are you', 'de'): 'hallo welt wie geht es dir',
+        ('hello world', 'de'): 'hallo welt',
+        ('how are you', 'de'): 'wie geht es dir',
+        ('good morning', 'de'): 'guten morgen',
+        ('good afternoon', 'de'): 'guten tag',
+        ('good evening', 'de'): 'guten abend',
+        ('good night', 'de'): 'gute nacht',
+        ('thank you', 'de'): 'danke',
+        ('what is your name', 'de'): 'wie heißt du',
+        ('my name is', 'de'): 'ich heiße',
+        ('see you later', 'de'): 'bis später',
+        ('i love you', 'de'): 'ich liebe dich',
+        ('where is', 'de'): 'wo ist',
+        ('how much', 'de'): 'wie viel',
+        
+        # Chinese complete phrases
+        ('hello world how are you', 'zh'): '你好世界你好吗',
         ('hello world', 'zh'): '你好世界',
+        ('how are you', 'zh'): '你好吗',
         ('good morning', 'zh'): '早上好',
         ('good afternoon', 'zh'): '下午好',
         ('good evening', 'zh'): '晚上好',
         ('good night', 'zh'): '晚安',
         ('thank you', 'zh'): '谢谢',
-        ('please', 'zh'): '请',
-        ('excuse me', 'zh'): '不好意思',
-        ('sorry', 'zh'): '对不起',
-        ('yes', 'zh'): '是',
-        ('no', 'zh'): '不',
-        ('how are you', 'zh'): '你好吗',
-        ('how', 'zh'): '怎么',
-        ('are', 'zh'): '是',
-        ('you', 'zh'): '你',
         ('what is your name', 'zh'): '你叫什么名字',
         ('my name is', 'zh'): '我的名字是',
-        ('goodbye', 'zh'): '再见',
         ('see you later', 'zh'): '回头见',
         ('i love you', 'zh'): '我爱你',
-        ('how much', 'zh'): '多少钱',
         ('where is', 'zh'): '在哪里',
-        ('i', 'zh'): '我',
-        ('am', 'zh'): '是',
-        ('fine', 'zh'): '好',
-        ('good', 'zh'): '好',
-        ('bad', 'zh'): '坏',
-        ('very', 'zh'): '很',
-        ('nice', 'zh'): '好',
-        ('beautiful', 'zh'): '美丽',
-        ('today', 'zh'): '今天',
-        ('tomorrow', 'zh'): '明天',
-        ('yesterday', 'zh'): '昨天',
+        ('how much', 'zh'): '多少钱',
         
-        # English to Japanese
-        ('hello', 'ja'): 'こんにちは',
-        ('world', 'ja'): '世界',
+        # Japanese complete phrases
+        ('hello world how are you', 'ja'): 'こんにちは世界元気ですか',
         ('hello world', 'ja'): 'こんにちは世界',
+        ('how are you', 'ja'): '元気ですか',
         ('good morning', 'ja'): 'おはよう',
         ('good afternoon', 'ja'): 'こんにちは',
         ('good evening', 'ja'): 'こんばんは',
         ('good night', 'ja'): 'おやすみ',
         ('thank you', 'ja'): 'ありがとう',
-        ('please', 'ja'): 'お願いします',
-        ('excuse me', 'ja'): 'すみません',
-        ('sorry', 'ja'): 'ごめんなさい',
-        ('yes', 'ja'): 'はい',
-        ('no', 'ja'): 'いいえ',
-        ('how are you', 'ja'): '元気ですか',
-        ('how', 'ja'): 'どう',
-        ('are', 'ja'): 'です',
-        ('you', 'ja'): 'あなた',
         ('what is your name', 'ja'): 'お名前は何ですか',
         ('my name is', 'ja'): '私の名前は',
-        ('goodbye', 'ja'): 'さようなら',
         ('see you later', 'ja'): 'また後で',
         ('i love you', 'ja'): '愛してる',
-        ('how much', 'ja'): 'いくら',
         ('where is', 'ja'): 'どこですか',
-        ('i', 'ja'): '私',
-        ('am', 'ja'): 'です',
-        ('fine', 'ja'): '元気',
-        ('good', 'ja'): '良い',
-        ('bad', 'ja'): '悪い',
-        ('very', 'ja'): 'とても',
-        ('nice', 'ja'): '素敵',
-        ('beautiful', 'ja'): '美しい',
-        ('today', 'ja'): '今日',
-        ('tomorrow', 'ja'): '明日',
-        ('yesterday', 'ja'): '昨日'
+        ('how much', 'ja'): 'いくら',
+        
+        # Individual words (lower priority)
+        ('hello', 'hi'): 'नमस्ते',
+        ('world', 'hi'): 'दुनिया',
+        ('how', 'hi'): 'कैसे',
+        ('are', 'hi'): 'हैं',
+        ('you', 'hi'): 'आप',
+        ('good', 'hi'): 'अच्छा',
+        ('morning', 'hi'): 'सुबह',
+        ('thank', 'hi'): 'धन्यवाद',
+        ('please', 'hi'): 'कृपया',
+        ('yes', 'hi'): 'हाँ',
+        ('no', 'hi'): 'नहीं',
+        ('sorry', 'hi'): 'माफ करें',
+        ('excuse', 'hi'): 'माफ',
+        ('me', 'hi'): 'मुझे',
+        ('i', 'hi'): 'मैं',
+        ('am', 'hi'): 'हूँ',
+        ('fine', 'hi'): 'ठीक',
+        ('today', 'hi'): 'आज',
+        ('tomorrow', 'hi'): 'कल',
+        ('yesterday', 'hi'): 'कल',
+        ('goodbye', 'hi'): 'अलविदा',
+        
+        # Spanish individual words
+        ('hello', 'es'): 'hola',
+        ('world', 'es'): 'mundo',
+        ('how', 'es'): 'cómo',
+        ('are', 'es'): 'estás',
+        ('you', 'es'): 'tú',
+        ('good', 'es'): 'bueno',
+        ('morning', 'es'): 'mañana',
+        ('thank', 'es'): 'gracias',
+        ('please', 'es'): 'por favor',
+        ('yes', 'es'): 'sí',
+        ('no', 'es'): 'no',
+        ('sorry', 'es'): 'lo siento',
+        ('excuse', 'es'): 'disculpe',
+        ('me', 'es'): 'me',
+        ('i', 'es'): 'yo',
+        ('am', 'es'): 'soy',
+        ('fine', 'es'): 'bien',
+        ('today', 'es'): 'hoy',
+        ('tomorrow', 'es'): 'mañana',
+        ('yesterday', 'es'): 'ayer',
+        ('goodbye', 'es'): 'adiós',
+        
+        # French individual words
+        ('hello', 'fr'): 'bonjour',
+        ('world', 'fr'): 'monde',
+        ('how', 'fr'): 'comment',
+        ('are', 'fr'): 'êtes',
+        ('you', 'fr'): 'vous',
+        ('good', 'fr'): 'bon',
+        ('morning', 'fr'): 'matin',
+        ('thank', 'fr'): 'merci',
+        ('please', 'fr'): 's\'il vous plaît',
+        ('yes', 'fr'): 'oui',
+        ('no', 'fr'): 'non',
+        ('sorry', 'fr'): 'désolé',
+        ('excuse', 'fr'): 'excusez',
+        ('me', 'fr'): 'moi',
+        ('i', 'fr'): 'je',
+        ('am', 'fr'): 'suis',
+        ('fine', 'fr'): 'bien',
+        ('today', 'fr'): 'aujourd\'hui',
+        ('tomorrow', 'fr'): 'demain',
+        ('yesterday', 'fr'): 'hier',
+        ('goodbye', 'fr'): 'au revoir'
     }
     
     # Clean and normalize the input text
     text_lower = text.lower().strip()
     
-    # Try exact match first (highest priority)
+    # Try exact match first (complete phrases have highest priority)
     key = (text_lower, target_lang)
     if key in translations:
         return {
@@ -1048,99 +991,71 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
             'api_used': 'Local Dictionary (Exact Match)'
         }
     
-    # Try phrase-by-phrase translation for longer sentences
+    # Try to find the longest matching phrases first
     import re
     
-    # Split by common sentence delimiters
-    sentences = re.split(r'[.!?]+', text_lower)
-    translated_sentences = []
+    # Sort phrases by length (longest first) to prioritize complete phrases
+    phrase_translations = [(phrase, lang, trans) for (phrase, lang), trans in translations.items() 
+                          if lang == target_lang and len(phrase.split()) > 1]
+    phrase_translations.sort(key=lambda x: len(x[0].split()), reverse=True)
     
-    for sentence in sentences:
-        sentence = sentence.strip()
-        if not sentence:
-            continue
-            
-        # Try to find the sentence in dictionary
-        sentence_key = (sentence, target_lang)
-        if sentence_key in translations:
-            translated_sentences.append(translations[sentence_key])
-            continue
-        
-        # Try common phrase patterns first
-        found_phrase = False
-        for (phrase, lang), translation in translations.items():
-            if lang == target_lang and phrase in sentence and len(phrase.split()) > 1:
-                # Replace the phrase in the sentence
-                sentence_translated = sentence.replace(phrase, translation)
-                translated_sentences.append(sentence_translated)
-                found_phrase = True
-                break
-        
-        if found_phrase:
-            continue
-        
-        # Try word-by-word translation only if we have good coverage
-        words = re.findall(r'\b\w+\b', sentence)
-        translated_words = []
-        translation_coverage = 0
-        
-        for word in words:
-            word_key = (word, target_lang)
-            if word_key in translations:
-                translated_words.append(translations[word_key])
-                translation_coverage += 1
-            else:
-                # For unknown words, try to provide a reasonable fallback
-                if target_lang == 'hi':
-                    # For Hindi, use transliteration-like approach for unknown words
-                    if word.lower() in ['the', 'a', 'an', 'is', 'was', 'were', 'be', 'been']:
-                        continue  # Skip articles and common words that don't translate well
-                    else:
-                        translated_words.append(f"({word})")  # Mark unknown words
-                elif target_lang == 'es':
-                    # For Spanish, provide basic fallbacks
-                    if word.lower() in ['the', 'a', 'an']:
-                        translated_words.append('el')
-                    elif word.lower() in ['is', 'are']:
-                        translated_words.append('es')
-                    else:
-                        translated_words.append(f"({word})")
-                elif target_lang == 'fr':
-                    # For French, provide basic fallbacks
-                    if word.lower() in ['the', 'a', 'an']:
-                        translated_words.append('le')
-                    elif word.lower() in ['is', 'are']:
-                        translated_words.append('est')
-                    else:
-                        translated_words.append(f"({word})")
-                else:
-                    translated_words.append(f"({word})")
-        
-        # Only use word-by-word if we have good coverage (at least 50%)
-        if len(words) > 0 and translation_coverage / len(words) >= 0.5:
-            if translated_words:
-                translated_sentences.append(' '.join(translated_words))
-            else:
-                translated_sentences.append(f"[{target_lang.upper()}] {sentence}")
-        else:
-            # Low coverage, use fallback format
-            translated_sentences.append(f"[{target_lang.upper()}] {sentence}")
+    # Try to replace phrases in order of length
+    result_text = text_lower
+    for phrase, lang, translation in phrase_translations:
+        if phrase in result_text:
+            result_text = result_text.replace(phrase, translation)
     
-    # Join translated sentences
-    if translated_sentences:
-        final_translation = '. '.join(translated_sentences)
-        # Clean up extra spaces and formatting
-        final_translation = re.sub(r'\s+', ' ', final_translation).strip()
+    # If we made any phrase replacements, return the result
+    if result_text != text_lower:
+        # Clean up extra spaces
+        result_text = re.sub(r'\s+', ' ', result_text).strip()
         # Capitalize first letter
+        result_text = result_text[0].upper() + result_text[1:] if result_text else result_text
+        
+        return {
+            'success': True,
+            'translated_text': result_text,
+            'detected_language': 'English',
+            'confidence': 0.90,
+            'api_used': 'Local Dictionary (Phrase Match)'
+        }
+    
+    # If no phrase matches, try word-by-word but only if we can translate most words
+    words = re.findall(r'\b\w+\b', text_lower)
+    translated_words = []
+    successful_translations = 0
+    
+    for word in words:
+        word_key = (word, target_lang)
+        if word_key in translations:
+            translated_words.append(translations[word_key])
+            successful_translations += 1
+        else:
+            translated_words.append(word)  # Keep original for now
+    
+    # Only use word-by-word if we can translate at least 70% of words
+    if len(words) > 0 and successful_translations / len(words) >= 0.7:
+        final_translation = ' '.join(translated_words)
+        # Clean up and capitalize
+        final_translation = re.sub(r'\s+', ' ', final_translation).strip()
         final_translation = final_translation[0].upper() + final_translation[1:] if final_translation else final_translation
         
         return {
             'success': True,
             'translated_text': final_translation,
             'detected_language': 'English',
-            'confidence': 0.80,
-            'api_used': 'Local Dictionary (Smart Translation)'
+            'confidence': 0.75,
+            'api_used': 'Local Dictionary (Word Translation)'
         }
+    
+    # Fallback: return formatted text
+    return {
+        'success': True,
+        'translated_text': f'[{target_lang.upper()}] {text}',
+        'detected_language': 'Unknown',
+        'confidence': 0.50,
+        'api_used': 'Fallback'
+    }
     
     # Fallback: return formatted text
     return {
