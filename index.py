@@ -1003,80 +1003,41 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
                           if lang == target_lang and len(phrase.split()) > 1]
     phrase_translations.sort(key=lambda x: len(x[0].split()), reverse=True)
     
-    # Try to replace phrases in order of length (case-insensitive)
-    result_text = text_lower
-    matched_any_phrase = False
-    
+    # Check if the entire text matches any complete phrase exactly
     for phrase, lang, translation in phrase_translations:
-        # Check if the phrase exists in the text (case-insensitive)
-        if phrase in result_text:
-            # Replace the entire text with the translation if it's an exact match
-            if result_text.strip() == phrase:
-                result_text = translation
-                matched_any_phrase = True
-                break
-            # Otherwise replace the phrase within the text
-            else:
-                result_text = result_text.replace(phrase, translation)
-                matched_any_phrase = True
+        if text_lower.strip() == phrase:
+            return {
+                'success': True,
+                'translated_text': translation,
+                'detected_language': 'English',
+                'confidence': 0.95,
+                'api_used': 'Local Dictionary (Complete Phrase Match)'
+            }
     
-    # If we made any phrase replacements, return the result
-    if matched_any_phrase:
-        # Clean up extra spaces
-        result_text = re.sub(r'\s+', ' ', result_text).strip()
-        # Capitalize first letter
-        result_text = result_text[0].upper() + result_text[1:] if result_text else result_text
-        
-        return {
-            'success': True,
-            'translated_text': result_text,
-            'detected_language': 'English',
-            'confidence': 0.90,
-            'api_used': 'Local Dictionary (Phrase Match)'
-        }
-    
-    # If no phrase matches, try word-by-word but only if we can translate most words
-    words = re.findall(r'\b\w+\b', text_lower)
-    translated_words = []
-    successful_translations = 0
-    
-    for word in words:
-        word_key = (word, target_lang)
+    # If no exact phrase match, check for single word translations
+    words = text_lower.split()
+    if len(words) == 1:
+        word_key = (words[0], target_lang)
         if word_key in translations:
-            translated_words.append(translations[word_key])
-            successful_translations += 1
-        else:
-            translated_words.append(word)  # Keep original for now
+            return {
+                'success': True,
+                'translated_text': translations[word_key],
+                'detected_language': 'English',
+                'confidence': 0.85,
+                'api_used': 'Local Dictionary (Single Word)'
+            }
     
-    # Only use word-by-word if we can translate at least 70% of words
-    if len(words) > 0 and successful_translations / len(words) >= 0.7:
-        final_translation = ' '.join(translated_words)
-        # Clean up and capitalize
-        final_translation = re.sub(r'\s+', ' ', final_translation).strip()
-        final_translation = final_translation[0].upper() + final_translation[1:] if final_translation else final_translation
-        
-        return {
-            'success': True,
-            'translated_text': final_translation,
-            'detected_language': 'English',
-            'confidence': 0.75,
-            'api_used': 'Local Dictionary (Word Translation)'
-        }
+    # If no phrase matches, return a helpful message suggesting supported phrases
+    supported_phrases = [
+        "hello", "hello world", "how are you", "good morning", "good afternoon", 
+        "good evening", "good night", "thank you", "i love you", "what is your name",
+        "my name is", "see you later", "where is", "how much"
+    ]
     
-    # Fallback: return formatted text
     return {
         'success': True,
-        'translated_text': f'[{target_lang.upper()}] {text}',
-        'detected_language': 'Unknown',
+        'translated_text': f'Sorry, I can only translate common phrases like: {", ".join(supported_phrases[:5])}... Try using shorter, common phrases.',
+        'detected_language': 'English',
         'confidence': 0.50,
-        'api_used': 'Fallback'
-    }
-    
-    # Fallback: return formatted text
-    return {
-        'success': True,
-        'translated_text': f'[{target_lang.upper()}] {text}',
-        'detected_language': 'Unknown',
-        'confidence': 0.50,
-        'api_used': 'Fallback'
+        'api_used': 'Fallback - Phrase Not Found'
     }
