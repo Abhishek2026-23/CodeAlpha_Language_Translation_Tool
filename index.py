@@ -778,12 +778,16 @@ def translate():
 def translate_with_mymemory(text, source_lang, target_lang):
     """Use MyMemory Translation API for free translations"""
     try:
+        # Skip very short texts that are likely to be in local dictionary
+        if len(text.split()) <= 3:
+            return None
+            
         # MyMemory API endpoint
         url = "https://api.mymemory.translated.net/get"
         
         # Map our language codes to MyMemory codes
         mymemory_codes = {
-            'auto': 'auto',
+            'auto': 'en',  # Default auto to English for MyMemory
             'en': 'en',
             'hi': 'hi',
             'fr': 'fr', 
@@ -805,12 +809,12 @@ def translate_with_mymemory(text, source_lang, target_lang):
         
         # Prepare request parameters
         params = {
-            'q': text,
+            'q': text[:500],  # Limit text length
             'langpair': f'{source_code}|{target_code}'
         }
         
-        # Make API request
-        response = requests.get(url, params=params, timeout=10)
+        # Make API request with shorter timeout
+        response = requests.get(url, params=params, timeout=8)
         
         if response.status_code == 200:
             result = response.json()
@@ -819,7 +823,7 @@ def translate_with_mymemory(text, source_lang, target_lang):
                 translated_text = result['responseData']['translatedText']
                 
                 # Check if translation is valid (not just returning original text)
-                if translated_text and translated_text.lower() != text.lower():
+                if translated_text and translated_text.lower().strip() != text.lower().strip():
                     return {
                         'success': True,
                         'translated_text': translated_text,
@@ -1151,17 +1155,34 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
                 'api_used': 'Local Dictionary (Single Word)'
             }
     
-    # If no phrase matches, return a helpful message suggesting supported phrases
-    supported_phrases = [
-        "hello", "hello world", "how are you", "good morning", "good afternoon", 
-        "good evening", "good night", "thank you", "i love you", "what is your name",
-        "my name is", "see you later", "where is", "how much"
-    ]
+    # If no phrase matches, provide a basic word-by-word translation attempt
+    words = text_lower.split()
+    translated_words = []
     
+    for word in words:
+        word_key = (word, target_lang)
+        if word_key in translations:
+            translated_words.append(translations[word_key])
+        else:
+            # Keep original word if no translation found
+            translated_words.append(word)
+    
+    # If we translated at least some words, return the result
+    if any(word in [trans for (phrase, lang), trans in translations.items() if lang == target_lang] for word in translated_words):
+        final_translation = ' '.join(translated_words)
+        return {
+            'success': True,
+            'translated_text': final_translation,
+            'detected_language': 'English',
+            'confidence': 0.60,
+            'api_used': 'Local Dictionary (Partial Translation)'
+        }
+    
+    # Final fallback message
     return {
         'success': True,
-        'translated_text': f'Sorry, I can only translate common phrases like: {", ".join(supported_phrases[:5])}... Try using shorter, common phrases.',
+        'translated_text': f'Translation service temporarily unavailable. Supported phrases: hello, how are you, good morning, thank you, i love you, etc.',
         'detected_language': 'English',
         'confidence': 0.50,
-        'api_used': 'Fallback - Phrase Not Found'
+        'api_used': 'Fallback - Service Unavailable'
     }
