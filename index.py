@@ -813,6 +813,8 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
     translations = {
         # Complete phrases (highest priority)
         ('hello world how are you', 'hi'): 'नमस्ते दुनिया आप कैसे हैं',
+        ('hello how are you', 'hi'): 'नमस्ते आप कैसे हैं',
+        ('hi how are you', 'hi'): 'नमस्ते आप कैसे हैं',
         ('hello world', 'hi'): 'नमस्ते दुनिया',
         ('how are you', 'hi'): 'आप कैसे हैं',
         ('good morning', 'hi'): 'सुप्रभात',
@@ -829,6 +831,8 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         
         # Spanish complete phrases
         ('hello world how are you', 'es'): 'hola mundo cómo estás',
+        ('hello how are you', 'es'): 'hola cómo estás',
+        ('hi how are you', 'es'): 'hola cómo estás',
         ('hello world', 'es'): 'hola mundo',
         ('how are you', 'es'): 'cómo estás',
         ('good morning', 'es'): 'buenos días',
@@ -999,11 +1003,14 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
                           if lang == target_lang and len(phrase.split()) > 1]
     phrase_translations.sort(key=lambda x: len(x[0].split()), reverse=True)
     
-    # Try to replace phrases in order of length
+    # Try to replace phrases in order of length (case-insensitive)
     result_text = text_lower
     for phrase, lang, translation in phrase_translations:
-        if phrase in result_text:
-            result_text = result_text.replace(phrase, translation)
+        # Use case-insensitive matching
+        if phrase.lower() in result_text.lower():
+            # Replace the phrase completely
+            pattern = re.escape(phrase)
+            result_text = re.sub(pattern, translation, result_text, flags=re.IGNORECASE)
     
     # If we made any phrase replacements, return the result
     if result_text != text_lower:
