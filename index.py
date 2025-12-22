@@ -807,12 +807,13 @@ def translate_with_google_api(text, source_lang, target_lang, api_key):
         return None
 
 def translate_with_local_dictionary(text, source_lang, target_lang):
-    """Enhanced local dictionary fallback with more translations"""
+    """Enhanced local dictionary fallback with smart sentence translation"""
     
     # Comprehensive translation dictionary
     translations = {
         # English to Spanish
         ('hello', 'es'): 'hola',
+        ('world', 'es'): 'mundo',
         ('hello world', 'es'): 'hola mundo',
         ('good morning', 'es'): 'buenos días',
         ('good afternoon', 'es'): 'buenas tardes',
@@ -825,6 +826,9 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('yes', 'es'): 'sí',
         ('no', 'es'): 'no',
         ('how are you', 'es'): 'cómo estás',
+        ('how', 'es'): 'cómo',
+        ('are', 'es'): 'estás',
+        ('you', 'es'): 'tú',
         ('what is your name', 'es'): 'cómo te llamas',
         ('my name is', 'es'): 'mi nombre es',
         ('goodbye', 'es'): 'adiós',
@@ -832,9 +836,21 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('i love you', 'es'): 'te amo',
         ('how much', 'es'): 'cuánto cuesta',
         ('where is', 'es'): 'dónde está',
+        ('i', 'es'): 'yo',
+        ('am', 'es'): 'soy',
+        ('fine', 'es'): 'bien',
+        ('good', 'es'): 'bueno',
+        ('bad', 'es'): 'malo',
+        ('very', 'es'): 'muy',
+        ('nice', 'es'): 'agradable',
+        ('beautiful', 'es'): 'hermoso',
+        ('today', 'es'): 'hoy',
+        ('tomorrow', 'es'): 'mañana',
+        ('yesterday', 'es'): 'ayer',
         
         # English to French
         ('hello', 'fr'): 'bonjour',
+        ('world', 'fr'): 'monde',
         ('hello world', 'fr'): 'bonjour le monde',
         ('good morning', 'fr'): 'bonjour',
         ('good afternoon', 'fr'): 'bon après-midi',
@@ -847,6 +863,9 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('yes', 'fr'): 'oui',
         ('no', 'fr'): 'non',
         ('how are you', 'fr'): 'comment allez-vous',
+        ('how', 'fr'): 'comment',
+        ('are', 'fr'): 'êtes',
+        ('you', 'fr'): 'vous',
         ('what is your name', 'fr'): 'comment vous appelez-vous',
         ('my name is', 'fr'): 'je m\'appelle',
         ('goodbye', 'fr'): 'au revoir',
@@ -854,9 +873,21 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('i love you', 'fr'): 'je t\'aime',
         ('how much', 'fr'): 'combien',
         ('where is', 'fr'): 'où est',
+        ('i', 'fr'): 'je',
+        ('am', 'fr'): 'suis',
+        ('fine', 'fr'): 'bien',
+        ('good', 'fr'): 'bon',
+        ('bad', 'fr'): 'mauvais',
+        ('very', 'fr'): 'très',
+        ('nice', 'fr'): 'agréable',
+        ('beautiful', 'fr'): 'beau',
+        ('today', 'fr'): 'aujourd\'hui',
+        ('tomorrow', 'fr'): 'demain',
+        ('yesterday', 'fr'): 'hier',
         
         # English to German
         ('hello', 'de'): 'hallo',
+        ('world', 'de'): 'welt',
         ('hello world', 'de'): 'hallo welt',
         ('good morning', 'de'): 'guten morgen',
         ('good afternoon', 'de'): 'guten tag',
@@ -869,6 +900,9 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('yes', 'de'): 'ja',
         ('no', 'de'): 'nein',
         ('how are you', 'de'): 'wie geht es dir',
+        ('how', 'de'): 'wie',
+        ('are', 'de'): 'sind',
+        ('you', 'de'): 'du',
         ('what is your name', 'de'): 'wie heißt du',
         ('my name is', 'de'): 'ich heiße',
         ('goodbye', 'de'): 'auf wiedersehen',
@@ -876,9 +910,21 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('i love you', 'de'): 'ich liebe dich',
         ('how much', 'de'): 'wie viel',
         ('where is', 'de'): 'wo ist',
+        ('i', 'de'): 'ich',
+        ('am', 'de'): 'bin',
+        ('fine', 'de'): 'gut',
+        ('good', 'de'): 'gut',
+        ('bad', 'de'): 'schlecht',
+        ('very', 'de'): 'sehr',
+        ('nice', 'de'): 'schön',
+        ('beautiful', 'de'): 'schön',
+        ('today', 'de'): 'heute',
+        ('tomorrow', 'de'): 'morgen',
+        ('yesterday', 'de'): 'gestern',
         
         # English to Hindi
         ('hello', 'hi'): 'नमस्ते',
+        ('world', 'hi'): 'दुनिया',
         ('hello world', 'hi'): 'नमस्ते दुनिया',
         ('good morning', 'hi'): 'सुप्रभात',
         ('good afternoon', 'hi'): 'नमस्कार',
@@ -887,10 +933,13 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('thank you', 'hi'): 'धन्यवाद',
         ('please', 'hi'): 'कृपया',
         ('excuse me', 'hi'): 'माफ करें',
-        ('sorry', 'hi'): 'खुशी',
+        ('sorry', 'hi'): 'माफ करें',
         ('yes', 'hi'): 'हाँ',
         ('no', 'hi'): 'नहीं',
         ('how are you', 'hi'): 'आप कैसे हैं',
+        ('how', 'hi'): 'कैसे',
+        ('are', 'hi'): 'हैं',
+        ('you', 'hi'): 'आप',
         ('what is your name', 'hi'): 'आपका नाम क्या है',
         ('my name is', 'hi'): 'मेरा नाम है',
         ('goodbye', 'hi'): 'अलविदा',
@@ -898,9 +947,21 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('i love you', 'hi'): 'मैं तुमसे प्यार करता हूँ',
         ('how much', 'hi'): 'कितना',
         ('where is', 'hi'): 'कहाँ है',
+        ('i', 'hi'): 'मैं',
+        ('am', 'hi'): 'हूँ',
+        ('fine', 'hi'): 'ठीक',
+        ('good', 'hi'): 'अच्छा',
+        ('bad', 'hi'): 'बुरा',
+        ('very', 'hi'): 'बहुत',
+        ('nice', 'hi'): 'अच्छा',
+        ('beautiful', 'hi'): 'सुंदर',
+        ('today', 'hi'): 'आज',
+        ('tomorrow', 'hi'): 'कल',
+        ('yesterday', 'hi'): 'कल',
         
         # English to Chinese
         ('hello', 'zh'): '你好',
+        ('world', 'zh'): '世界',
         ('hello world', 'zh'): '你好世界',
         ('good morning', 'zh'): '早上好',
         ('good afternoon', 'zh'): '下午好',
@@ -913,6 +974,9 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('yes', 'zh'): '是',
         ('no', 'zh'): '不',
         ('how are you', 'zh'): '你好吗',
+        ('how', 'zh'): '怎么',
+        ('are', 'zh'): '是',
+        ('you', 'zh'): '你',
         ('what is your name', 'zh'): '你叫什么名字',
         ('my name is', 'zh'): '我的名字是',
         ('goodbye', 'zh'): '再见',
@@ -920,9 +984,21 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('i love you', 'zh'): '我爱你',
         ('how much', 'zh'): '多少钱',
         ('where is', 'zh'): '在哪里',
+        ('i', 'zh'): '我',
+        ('am', 'zh'): '是',
+        ('fine', 'zh'): '好',
+        ('good', 'zh'): '好',
+        ('bad', 'zh'): '坏',
+        ('very', 'zh'): '很',
+        ('nice', 'zh'): '好',
+        ('beautiful', 'zh'): '美丽',
+        ('today', 'zh'): '今天',
+        ('tomorrow', 'zh'): '明天',
+        ('yesterday', 'zh'): '昨天',
         
         # English to Japanese
         ('hello', 'ja'): 'こんにちは',
+        ('world', 'ja'): '世界',
         ('hello world', 'ja'): 'こんにちは世界',
         ('good morning', 'ja'): 'おはよう',
         ('good afternoon', 'ja'): 'こんにちは',
@@ -935,37 +1011,91 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
         ('yes', 'ja'): 'はい',
         ('no', 'ja'): 'いいえ',
         ('how are you', 'ja'): '元気ですか',
+        ('how', 'ja'): 'どう',
+        ('are', 'ja'): 'です',
+        ('you', 'ja'): 'あなた',
         ('what is your name', 'ja'): 'お名前は何ですか',
         ('my name is', 'ja'): '私の名前は',
         ('goodbye', 'ja'): 'さようなら',
         ('see you later', 'ja'): 'また後で',
         ('i love you', 'ja'): '愛してる',
         ('how much', 'ja'): 'いくら',
-        ('where is', 'ja'): 'どこですか'
+        ('where is', 'ja'): 'どこですか',
+        ('i', 'ja'): '私',
+        ('am', 'ja'): 'です',
+        ('fine', 'ja'): '元気',
+        ('good', 'ja'): '良い',
+        ('bad', 'ja'): '悪い',
+        ('very', 'ja'): 'とても',
+        ('nice', 'ja'): '素敵',
+        ('beautiful', 'ja'): '美しい',
+        ('today', 'ja'): '今日',
+        ('tomorrow', 'ja'): '明日',
+        ('yesterday', 'ja'): '昨日'
     }
     
-    # Try exact match first
-    key = (text.lower().strip(), target_lang)
+    # Clean and normalize the input text
+    text_lower = text.lower().strip()
+    
+    # Try exact match first (highest priority)
+    key = (text_lower, target_lang)
     if key in translations:
         return {
             'success': True,
             'translated_text': translations[key],
             'detected_language': 'English',
-            'confidence': 0.90,
-            'api_used': 'Local Dictionary'
+            'confidence': 0.95,
+            'api_used': 'Local Dictionary (Exact Match)'
         }
     
-    # Try partial matches for common words
-    text_lower = text.lower().strip()
-    for (phrase, lang), translation in translations.items():
-        if lang == target_lang and phrase in text_lower:
-            return {
-                'success': True,
-                'translated_text': translation,
-                'detected_language': 'English',
-                'confidence': 0.75,
-                'api_used': 'Local Dictionary (Partial Match)'
-            }
+    # Try phrase-by-phrase translation for longer sentences
+    import re
+    
+    # Split by common sentence delimiters
+    sentences = re.split(r'[.!?]+', text_lower)
+    translated_sentences = []
+    
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+            
+        # Try to find the sentence in dictionary
+        sentence_key = (sentence, target_lang)
+        if sentence_key in translations:
+            translated_sentences.append(translations[sentence_key])
+            continue
+        
+        # Try word-by-word translation
+        words = re.findall(r'\b\w+\b', sentence)
+        translated_words = []
+        
+        for word in words:
+            word_key = (word, target_lang)
+            if word_key in translations:
+                translated_words.append(translations[word_key])
+            else:
+                # Keep original word if no translation found
+                translated_words.append(word)
+        
+        if translated_words:
+            translated_sentences.append(' '.join(translated_words))
+        else:
+            translated_sentences.append(sentence)
+    
+    # Join translated sentences
+    if translated_sentences:
+        final_translation = '. '.join(translated_sentences)
+        # Capitalize first letter
+        final_translation = final_translation[0].upper() + final_translation[1:] if final_translation else final_translation
+        
+        return {
+            'success': True,
+            'translated_text': final_translation,
+            'detected_language': 'English',
+            'confidence': 0.80,
+            'api_used': 'Local Dictionary (Smart Translation)'
+        }
     
     # Fallback: return formatted text
     return {
