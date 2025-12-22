@@ -701,6 +701,19 @@ HTML = '''<!DOCTYPE html>
 def home():
     return HTML
 
+@app.route('/api/test')
+def api_test():
+    return jsonify({
+        'status': 'working',
+        'message': 'API is live',
+        'sample_translation': 'hello -> hola'
+    })
+
+@app.route('/test')
+def test():
+    with open('test_api.html', 'r') as f:
+        return f.read()
+
 @app.route('/api/translate', methods=['POST'])
 def translate():
     data = request.get_json()
