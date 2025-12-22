@@ -730,8 +730,25 @@ def api_test():
     return jsonify({
         'status': 'working',
         'message': 'API is live',
-        'sample_translation': 'hello -> hola'
+        'sample_translation': 'hello -> hola',
+        'version': '2.0 - MyMemory API Integration'
     })
+
+@app.route('/api/test-mymemory')
+def test_mymemory_endpoint():
+    try:
+        result = translate_with_mymemory('I am learning programming', 'en', 'hi')
+        return jsonify({
+            'status': 'success',
+            'mymemory_result': result,
+            'message': 'MyMemory API test'
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'message': 'MyMemory API test failed'
+        })
 
 @app.route('/test')
 def test():
