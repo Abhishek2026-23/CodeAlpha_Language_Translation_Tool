@@ -1066,26 +1066,71 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
             translated_sentences.append(translations[sentence_key])
             continue
         
-        # Try word-by-word translation
+        # Try common phrase patterns first
+        found_phrase = False
+        for (phrase, lang), translation in translations.items():
+            if lang == target_lang and phrase in sentence and len(phrase.split()) > 1:
+                # Replace the phrase in the sentence
+                sentence_translated = sentence.replace(phrase, translation)
+                translated_sentences.append(sentence_translated)
+                found_phrase = True
+                break
+        
+        if found_phrase:
+            continue
+        
+        # Try word-by-word translation only if we have good coverage
         words = re.findall(r'\b\w+\b', sentence)
         translated_words = []
+        translation_coverage = 0
         
         for word in words:
             word_key = (word, target_lang)
             if word_key in translations:
                 translated_words.append(translations[word_key])
+                translation_coverage += 1
             else:
-                # Keep original word if no translation found
-                translated_words.append(word)
+                # For unknown words, try to provide a reasonable fallback
+                if target_lang == 'hi':
+                    # For Hindi, use transliteration-like approach for unknown words
+                    if word.lower() in ['the', 'a', 'an', 'is', 'was', 'were', 'be', 'been']:
+                        continue  # Skip articles and common words that don't translate well
+                    else:
+                        translated_words.append(f"({word})")  # Mark unknown words
+                elif target_lang == 'es':
+                    # For Spanish, provide basic fallbacks
+                    if word.lower() in ['the', 'a', 'an']:
+                        translated_words.append('el')
+                    elif word.lower() in ['is', 'are']:
+                        translated_words.append('es')
+                    else:
+                        translated_words.append(f"({word})")
+                elif target_lang == 'fr':
+                    # For French, provide basic fallbacks
+                    if word.lower() in ['the', 'a', 'an']:
+                        translated_words.append('le')
+                    elif word.lower() in ['is', 'are']:
+                        translated_words.append('est')
+                    else:
+                        translated_words.append(f"({word})")
+                else:
+                    translated_words.append(f"({word})")
         
-        if translated_words:
-            translated_sentences.append(' '.join(translated_words))
+        # Only use word-by-word if we have good coverage (at least 50%)
+        if len(words) > 0 and translation_coverage / len(words) >= 0.5:
+            if translated_words:
+                translated_sentences.append(' '.join(translated_words))
+            else:
+                translated_sentences.append(f"[{target_lang.upper()}] {sentence}")
         else:
-            translated_sentences.append(sentence)
+            # Low coverage, use fallback format
+            translated_sentences.append(f"[{target_lang.upper()}] {sentence}")
     
     # Join translated sentences
     if translated_sentences:
         final_translation = '. '.join(translated_sentences)
+        # Clean up extra spaces and formatting
+        final_translation = re.sub(r'\s+', ' ', final_translation).strip()
         # Capitalize first letter
         final_translation = final_translation[0].upper() + final_translation[1:] if final_translation else final_translation
         
