@@ -1005,15 +1005,23 @@ def translate_with_local_dictionary(text, source_lang, target_lang):
     
     # Try to replace phrases in order of length (case-insensitive)
     result_text = text_lower
+    matched_any_phrase = False
+    
     for phrase, lang, translation in phrase_translations:
-        # Use case-insensitive matching
-        if phrase.lower() in result_text.lower():
-            # Replace the phrase completely
-            pattern = re.escape(phrase)
-            result_text = re.sub(pattern, translation, result_text, flags=re.IGNORECASE)
+        # Check if the phrase exists in the text (case-insensitive)
+        if phrase in result_text:
+            # Replace the entire text with the translation if it's an exact match
+            if result_text.strip() == phrase:
+                result_text = translation
+                matched_any_phrase = True
+                break
+            # Otherwise replace the phrase within the text
+            else:
+                result_text = result_text.replace(phrase, translation)
+                matched_any_phrase = True
     
     # If we made any phrase replacements, return the result
-    if result_text != text_lower:
+    if matched_any_phrase:
         # Clean up extra spaces
         result_text = re.sub(r'\s+', ' ', result_text).strip()
         # Capitalize first letter
