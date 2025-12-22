@@ -751,21 +751,145 @@ def translate():
         if len(text) > 5000:
             return jsonify({'error': 'Text too long. Maximum 5000 characters allowed.'}), 400
         
-        # Get Google Translate API key from environment
+        # Try Google Translate API first if available
         api_key = os.getenv('GOOGLE_TRANSLATE_API_KEY')
-        
         if api_key:
-            # Use real Google Translate API
             result = translate_with_google_api(text, source_lang, target_lang, api_key)
             if result:
                 return jsonify(result)
         
-        # Fallback to enhanced local dictionary for demo purposes
+        # Try MyMemory API as fallback
+        result = translate_with_mymemory(text, source_lang, target_lang)
+        if result:
+            return jsonify(result)
+        
+        # Try LibreTranslate API as secondary fallback
+        result = translate_with_libretranslate(text, source_lang, target_lang)
+        if result:
+            return jsonify(result)
+        
+        # Final fallback to local dictionary
         result = translate_with_local_dictionary(text, source_lang, target_lang)
         return jsonify(result)
         
     except Exception as e:
         return jsonify({'error': f'Translation failed: {str(e)}'}), 500
+
+def translate_with_mymemory(text, source_lang, target_lang):
+    """Use MyMemory Translation API for free translations"""
+    try:
+        # MyMemory API endpoint
+        url = "https://api.mymemory.translated.net/get"
+        
+        # Map our language codes to MyMemory codes
+        mymemory_codes = {
+            'auto': 'auto',
+            'en': 'en',
+            'hi': 'hi',
+            'fr': 'fr', 
+            'es': 'es',
+            'de': 'de',
+            'zh': 'zh-CN',
+            'ja': 'ja',
+            'ko': 'ko',
+            'ar': 'ar',
+            'pt': 'pt',
+            'ru': 'ru',
+            'it': 'it',
+            'nl': 'nl',
+            'tr': 'tr'
+        }
+        
+        source_code = mymemory_codes.get(source_lang, 'en')
+        target_code = mymemory_codes.get(target_lang, 'es')
+        
+        # Prepare request parameters
+        params = {
+            'q': text,
+            'langpair': f'{source_code}|{target_code}'
+        }
+        
+        # Make API request
+        response = requests.get(url, params=params, timeout=10)
+        
+        if response.status_code == 200:
+            result = response.json()
+            
+            if 'responseData' in result and result['responseData']:
+                translated_text = result['responseData']['translatedText']
+                
+                # Check if translation is valid (not just returning original text)
+                if translated_text and translated_text.lower() != text.lower():
+                    return {
+                        'success': True,
+                        'translated_text': translated_text,
+                        'detected_language': source_code,
+                        'confidence': 0.85,
+                        'api_used': 'MyMemory Translation API'
+                    }
+        
+        return None
+        
+    except Exception as e:
+        print(f"MyMemory API error: {e}")
+        return None
+
+def translate_with_libretranslate(text, source_lang, target_lang):
+    """Use LibreTranslate API for free translations"""
+    try:
+        # LibreTranslate public API endpoint
+        url = "https://libretranslate.de/translate"
+        
+        # Map our language codes to LibreTranslate codes
+        libretranslate_codes = {
+            'auto': 'auto',
+            'en': 'en',
+            'hi': 'hi',
+            'fr': 'fr', 
+            'es': 'es',
+            'de': 'de',
+            'zh': 'zh',
+            'ja': 'ja',
+            'ko': 'ko',
+            'ar': 'ar',
+            'pt': 'pt',
+            'ru': 'ru',
+            'it': 'it',
+            'nl': 'nl',
+            'tr': 'tr'
+        }
+        
+        source_code = libretranslate_codes.get(source_lang, 'en')
+        target_code = libretranslate_codes.get(target_lang, 'es')
+        
+        # Prepare request data
+        payload = {
+            'q': text,
+            'source': source_code,
+            'target': target_code,
+            'format': 'text'
+        }
+        
+        # Make API request
+        response = requests.post(url, json=payload, timeout=15)
+        
+        if response.status_code == 200:
+            result = response.json()
+            
+            if 'translatedText' in result:
+                return {
+                    'success': True,
+                    'translated_text': result['translatedText'],
+                    'detected_language': result.get('detectedLanguage', {}).get('language', 'unknown'),
+                    'confidence': 0.90,
+                    'api_used': 'LibreTranslate API'
+                }
+        
+        return None
+        
+    except Exception as e:
+        print(f"LibreTranslate API error: {e}")
+        return None
 
 def translate_with_google_api(text, source_lang, target_lang, api_key):
     """Use Google Translate API for real translations"""
