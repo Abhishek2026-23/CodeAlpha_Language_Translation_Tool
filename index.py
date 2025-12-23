@@ -4,7 +4,7 @@ import requests
 import json
 from urllib.parse import quote
 
-# Version: 2.0 - MyMemory API Integration
+# Version: 2.1 - Enhanced Translation System - FORCE REDEPLOY
 app = Flask(__name__)
 
 # Language codes mapping for Google Translate API
