@@ -4,10 +4,10 @@ import requests
 import json
 from urllib.parse import quote
 
-# Version: 3.0 - FINAL ENHANCED SYSTEM - IMMEDIATE DEPLOY
+# Language Translation Tool - CodeAlpha Internship Project
 app = Flask(__name__)
 
-# Language codes mapping for Google Translate API
+# Language codes for translation API
 LANGUAGE_CODES = {
     'auto': 'auto',
     'en': 'en',
@@ -724,36 +724,6 @@ HTML = '''<!DOCTYPE html>
 @app.route('/')
 def home():
     return HTML
-
-@app.route('/api/test')
-def api_test():
-    return jsonify({
-        'status': 'working',
-        'message': 'API is live',
-        'sample_translation': 'hello -> hola',
-        'version': '2.0 - MyMemory API Integration'
-    })
-
-@app.route('/api/test-mymemory')
-def test_mymemory_endpoint():
-    try:
-        result = translate_with_mymemory('I am learning programming', 'en', 'hi')
-        return jsonify({
-            'status': 'success',
-            'mymemory_result': result,
-            'message': 'MyMemory API test'
-        })
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'error': str(e),
-            'message': 'MyMemory API test failed'
-        })
-
-@app.route('/test')
-def test():
-    with open('test_api.html', 'r') as f:
-        return f.read()
 
 @app.route('/api/translate', methods=['POST'])
 def translate():
