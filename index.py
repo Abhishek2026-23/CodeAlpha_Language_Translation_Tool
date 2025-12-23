@@ -776,12 +776,67 @@ def translate():
             if result:
                 return jsonify(result)
         
-        # Use simple but effective translation system
-        result = simple_translate(text, source_lang, target_lang)
+        # Use Google Translate API for ALL translations
+        result = translate_with_google_translate_free(text, source_lang, target_lang)
         return jsonify(result)
         
     except Exception as e:
         return jsonify({'error': f'Translation failed: {str(e)}'}), 500
+
+def translate_with_google_translate_free(text, source_lang, target_lang):
+    """Use Google Translate via web scraping for free translations"""
+    try:
+        import urllib.parse
+        import re
+        
+        # Clean text for URL encoding
+        text_encoded = urllib.parse.quote(text)
+        
+        # Map language codes
+        lang_map = {
+            'auto': 'auto', 'en': 'en', 'hi': 'hi', 'es': 'es', 'fr': 'fr',
+            'de': 'de', 'zh': 'zh', 'ja': 'ja', 'ko': 'ko', 'ar': 'ar',
+            'pt': 'pt', 'ru': 'ru', 'it': 'it', 'nl': 'nl', 'tr': 'tr'
+        }
+        
+        source_code = lang_map.get(source_lang, 'auto')
+        target_code = lang_map.get(target_lang, 'hi')
+        
+        # Use Google Translate URL
+        url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl={source_code}&tl={target_code}&dt=t&q={text_encoded}"
+        
+        # Make request
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code == 200:
+            # Parse JSON response
+            result = response.json()
+            
+            if result and len(result) > 0 and result[0]:
+                # Extract translated text
+                translated_parts = []
+                for part in result[0]:
+                    if part and len(part) > 0:
+                        translated_parts.append(part[0])
+                
+                translated_text = ''.join(translated_parts)
+                
+                if translated_text and translated_text.strip():
+                    return {
+                        'success': True,
+                        'translated_text': translated_text.strip(),
+                        'detected_language': result[2] if len(result) > 2 else 'unknown',
+                        'confidence': 0.95,
+                        'api_used': 'Google Translate Free API'
+                    }
+        
+        # Fallback to simple translation
+        return simple_translate(text, source_lang, target_lang)
+        
+    except Exception as e:
+        print(f"Google Translate Free API error: {e}")
+        # Fallback to simple translation
+        return simple_translate(text, source_lang, target_lang)
 
 def simple_translate(text, source_lang, target_lang):
     """Simple but effective translation system"""
